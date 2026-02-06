@@ -17,12 +17,11 @@ const Income = () => {
     const [formData, setFormData] = useState({
         source: "",
         amount: "",
-        date: new Date().toISOString().split('T')[0], // Defaults to today
+        date: new Date().toISOString().split('T')[0],
         category: "Salary",
         description: ""
     });
 
-    // We use useCallback to memoize the function and prevent unnecessary re-renders
     const fetchIncomes = useCallback(async () => {
         try {
             setLoading(true);
@@ -48,7 +47,6 @@ const Income = () => {
             const res = await api.post("/income/add", formData);
             if (res.data?.success) {
                 toast.success("Income added successfully!");
-                // Reset form
                 setFormData({
                     source: "",
                     amount: "",
@@ -56,7 +54,7 @@ const Income = () => {
                     category: "Salary",
                     description: ""
                 });
-                fetchIncomes(); // Refresh the list
+                fetchIncomes();
             }
         } catch (err) {
             toast.error(err.response?.data?.message || "Error adding income");
@@ -76,16 +74,33 @@ const Income = () => {
         }
     };
 
-    const handleExport = () => {
-        // Points to the specialized Excel route we built
-        window.open("http://localhost:5000/api/income/download", "_blank");
+    // SECURE DOWNLOAD LOGIC
+    const handleDownload = async () => {
+        try {
+            toast.loading("Preparing Excel report...", { id: "download" });
+            const response = await api.get("/income/download", {
+                responseType: 'blob', 
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Incomes_Report.xlsx'); 
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            
+            toast.success("Income report downloaded!", { id: "download" });
+        } catch (err) {
+            console.error("Download error:", err);
+            toast.error("Failed to download Excel report", { id: "download" });
+        }
     };
 
     const totalIncome = incomes.reduce((acc, curr) => acc + curr.amount, 0);
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            {/* Page Header */}
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
@@ -94,7 +109,7 @@ const Income = () => {
                     <p className="text-gray-500">Total Revenue: <span className="text-green-600 font-bold">${totalIncome.toLocaleString()}</span></p>
                 </div>
                 <button 
-                    onClick={handleExport}
+                    onClick={handleDownload}
                     className="flex items-center gap-2 bg-white border border-gray-300 px-5 py-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm text-gray-700 font-medium"
                 >
                     <Download size={18} /> Export Excel
@@ -102,110 +117,52 @@ const Income = () => {
             </div>
 
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                {/* FORM SECTION (Left Side) */}
                 <div className="lg:col-span-4">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-6">
                         <div className="flex items-center gap-2 mb-6">
                             <PlusCircle className="text-green-500" />
                             <h2 className="text-xl font-semibold text-gray-800">Add Income</h2>
                         </div>
-                        
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Source / Company</label>
-                                <input 
-                                    type="text" placeholder="e.g. Freelance Project" 
-                                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
-                                    value={formData.source}
-                                    onChange={(e) => setFormData({...formData, source: e.target.value})}
-                                    required
-                                />
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Source</label>
+                                <input type="text" placeholder="e.g. Salary" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500" value={formData.source} onChange={(e) => setFormData({...formData, source: e.target.value})} required />
                             </div>
-
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Amount ($)</label>
-                                <div className="relative">
-                                    <CircleDollarSign className="absolute left-3 top-3.5 text-gray-400" size={18} />
-                                    <input 
-                                        type="number" placeholder="0.00"
-                                        className="w-full p-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
-                                        value={formData.amount}
-                                        onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                                        required
-                                    />
-                                </div>
+                                <input type="number" placeholder="0.00" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
                             </div>
-
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Date</label>
-                                <div className="relative">
-                                    <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
-                                    <input 
-                                        type="date" 
-                                        className="w-full p-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
-                                        value={formData.date}
-                                        onChange={(e) => setFormData({...formData, date: e.target.value})}
-                                        required
-                                    />
-                                </div>
+                                <input type="date" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} required />
                             </div>
-
-                            <button className="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition shadow-lg shadow-green-100 flex justify-center items-center gap-2">
-                                <PlusCircle size={20} /> Save Income
-                            </button>
+                            <button className="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition">Save Income</button>
                         </form>
                     </div>
                 </div>
 
-                {/* LIST SECTION (Right Side) */}
                 <div className="lg:col-span-8">
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-50">
-                            <h2 className="text-xl font-semibold text-gray-800">Transaction History</h2>
-                        </div>
-
+                    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                        <div className="p-6 border-b border-gray-50 font-semibold">Transaction History</div>
                         <div className="divide-y divide-gray-100">
-                            {loading ? (
-                                <div className="p-12 text-center text-gray-400 animate-pulse">Loading data...</div>
-                            ) : incomes.length === 0 ? (
-                                <div className="p-12 text-center text-gray-400">
-                                    <Wallet size={48} className="mx-auto mb-4 opacity-20" />
-                                    <p>No income history found.</p>
-                                </div>
-                            ) : (
-                                incomes.map((item) => (
-                                    <div key={item._id} className="p-5 hover:bg-gray-50 transition flex items-center justify-between group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center font-bold">
-                                                <TrendingUp size={24} />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-gray-800 group-hover:text-green-700 transition-colors">{item.source}</h3>
-                                                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                                                    <Calendar size={12} />
-                                                    <span>{new Date(item.date).toLocaleDateString()}</span>
-                                                    <span className="px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">{item.category || "Salary"}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-6">
-                                            <span className="text-green-600 font-extrabold text-xl">+${item.amount.toLocaleString()}</span>
-                                            <button 
-                                                onClick={() => handleDelete(item._id)}
-                                                className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                title="Delete entry"
-                                            >
-                                                <Trash2 size={20} />
-                                            </button>
+                            {loading ? <div className="p-10 text-center animate-pulse">Loading...</div> : incomes.map((item) => (
+                                <div key={item._id} className="p-5 flex items-center justify-between hover:bg-gray-50 transition">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center font-bold">I</div>
+                                        <div>
+                                            <p className="font-bold text-gray-800">{item.source}</p>
+                                            <p className="text-xs text-gray-500">{new Date(item.date).toLocaleDateString()}</p>
                                         </div>
                                     </div>
-                                ))
-                            )}
+                                    <div className="flex items-center gap-6">
+                                        <span className="text-green-600 font-bold text-lg">+${item.amount.toLocaleString()}</span>
+                                        <button onClick={() => handleDelete(item._id)} className="text-gray-300 hover:text-red-500"><Trash2 size={18}/></button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

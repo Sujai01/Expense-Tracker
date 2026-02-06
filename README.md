@@ -1,33 +1,16 @@
-# 💰 Advanced MERN Expense Tracker
+# React + Vite
 
-A full-stack financial management application built with the MERN stack, featuring real-time analytics, secure authentication, and data export capabilities.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 🚀 Key Features
-- **Dashboard Analytics:** Interactive data visualization using Recharts.
-- **Transaction Management:** Complete CRUD for Income and Expenses.
-- **Excel Export:** Generate and download professional financial reports.
-- **Secure Auth:** JWT-based authentication with password hashing (Bcrypt).
-- **Profile Management:** Image upload support using Multer.
-- **Responsive UI:** Fully mobile-friendly design built with Tailwind CSS.
+Currently, two official plugins are available:
 
-## 🛠️ Tech Stack
-- **Frontend:** React.js, Tailwind CSS, Lucide React, Recharts.
-- **Backend:** Node.js, Express.js.
-- **Database:** MongoDB Atlas (Mongoose).
-- **Tools:** Axios, JWT, Multer, XLSX.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## ⚙️ Installation & Setup
+## React Compiler
 
-1. **Clone the repo:**
-   ```bash
-   git clone https://github.com/Sujai01/Expense-Tracker.git
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-1. Backend Setup:
-Navigate to /backend
-Run npm install
-Create a .env file and add MONGO_URI, JWT_SECRET, and PORT.
-Start server: npm run dev
-2. Frontend Setup:
-Navigate to /frontend/expense-tracker
-Run npm install
-Start app: npm run dev
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
