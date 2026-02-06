@@ -33,9 +33,12 @@ const App = () => {
           <Route path="/signup" element={<SignUP />} />
 
           {/* Protected Routes - Notice the cleaner nesting */}
-          <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path="/income" element={<ProtectedRoute><Income /></ProtectedRoute>} />
-          <Route path="/expense" element={<ProtectedRoute><Expense /></ProtectedRoute>} />
+          <Route 
+    path="/dashboard" 
+    element={<ProtectedRoute key="dashboard-page"><Home /></ProtectedRoute>} 
+  />
+  <Route path="/income" element={<ProtectedRoute><Income /></ProtectedRoute>} />
+  <Route path="/expense" element={<ProtectedRoute><Expense /></ProtectedRoute>} />
 
           {/* Root & Fallback Redirects */}
           <Route path="/" element={<Root />} />
