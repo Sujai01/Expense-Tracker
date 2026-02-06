@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { UserContextProvider } from "./context/userContext";
 
@@ -10,17 +10,17 @@ import Income from "./pages/Dashboard/income";
 import Expense from "./pages/Dashboard/Expense";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 
-// 1. Optimized Protected Route
-// We move DashboardLayout INSIDE here to keep the route definitions clean and stable
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("token");
+// This component checks auth and then renders the "Outlet" (the sub-page)
+const AuthGuard = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return <Navigate to="/login" replace />;
   
-  if (!isAuthenticated) {
-    // 'replace' is critical to prevent history loops
-    return <Navigate to="/login" replace />;
-  }
-
-  return <DashboardLayout>{children}</DashboardLayout>;
+  // Wrap the Outlet in the Layout so the Layout stays stable
+  return (
+    <DashboardLayout>
+      <Outlet /> 
+    </DashboardLayout>
+  );
 };
 
 const App = () => {
@@ -32,31 +32,20 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUP />} />
 
-          {/* Protected Routes - Notice the cleaner nesting */}
-          <Route 
-    path="/dashboard" 
-    element={<ProtectedRoute key="dashboard-page"><Home /></ProtectedRoute>} 
-  />
-  <Route path="/income" element={<ProtectedRoute><Income /></ProtectedRoute>} />
-  <Route path="/expense" element={<ProtectedRoute><Expense /></ProtectedRoute>} />
+          {/* Protected Routes - Notice how they are INSIDE AuthGuard */}
+          <Route element={<AuthGuard />}>
+            <Route path="/dashboard" element={<Home />} />
+            <Route path="/income" element={<Income />} />
+            <Route path="/expense" element={<Expense />} />
+          </Route>
 
-          {/* Root & Fallback Redirects */}
-          <Route path="/" element={<Root />} />
+          {/* Redirects */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>
-      {/* Moved Toaster outside Router for better performance */}
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster position="bottom-right" />
     </UserContextProvider>
-  );
-};
-
-const Root = () => {
-  const isAuthenticated = !!localStorage.getItem("token");
-  return isAuthenticated ? (
-    <Navigate to="/dashboard" replace />
-  ) : (
-    <Navigate to="/login" replace />
   );
 };
 
