@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../utils/api";
 import { 
     ResponsiveContainer, AreaChart, Area, 
@@ -63,7 +63,7 @@ const Home = () => {
                 </div>
 
                 {/* CHART SECTION */}
-                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                {/* <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
                     <h3 className="text-xl font-bold text-gray-800 mb-6">Cash Flow Trend</h3>
                     <div className="h-[400px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -101,7 +101,7 @@ const Home = () => {
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

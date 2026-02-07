@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { UserContextProvider } from "./context/userContext";
-
 import Login from "./pages/auth/Login";
 import SignUP from "./pages/auth/SignUP";
 import Home from "./pages/Dashboard/Home";
