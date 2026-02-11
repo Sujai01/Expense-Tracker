@@ -10,18 +10,24 @@
 @layer base {
   html{
     font-family: var(--font-display);
+    color-scheme: dark;
   }
   body{
-    background-color: #fcfbfc;
+     background-color: #060606 !important; 
+    color: #ffffff !important;
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
   }
   
 }
 
-.input-box{
-  @apply w-full flex justify-between gap-3 text-sm text-black bg-slate-100 rounded px-4 py-3 mb-4 mt-3 border border-slate-200 outline-none; 
+.input-box, input, select, textarea {
+  background-color: #1a1a1a !important;
+  color: white !important;
+  border: 1px solid #27272a !important; /* Zinc-800 */
 }
 
-.btn-primary{
-  @apply w-full text-sm font-medium text-white bg-violet-500 shadow-lg shadow-purple-600/5 p-[10px] rounded-md my-1 hover:bg-purple-700 hover:text-purple-600;
+.btn-primary {
+  @apply w-full text-sm font-medium text-white bg-[#875cf5] shadow-lg shadow-purple-600/20 p-[10px] rounded-xl my-1 hover:bg-[#7a4de3] transition-all;
 }
